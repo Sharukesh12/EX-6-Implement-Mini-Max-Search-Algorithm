@@ -1,10 +1,12 @@
-# ExpNo 6 : Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game</h1> 
-## Name: Sharukesh T
-## Register Number:2305002022
-## Aim:
-Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game
+<h1>ExpNo 6 : Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game</h1> 
+<h3>Name: Sharukesh T      </h3>
+<h3>Register Number: 2305002022       </h3>
+<H3>Aim:</H3>
+<p>
+    Implement Minimax Search Algorithm for a Simple TIC-TAC-TOE game
+</p>
 
-## Theory and Procedure:
+<H3>Theory and Procedure:</H3>
 To begin, let's start by defining what it means to play a perfect game of tic tac toe:
 
 If I play perfectly, every time I play I will either win the game, or I will draw the game. Furthermore if I play against another perfect player, I will always draw the game.
@@ -56,7 +58,7 @@ Let's walk through the algorithm's execution with the full move tree, and show w
 <li>Because it is O's turn in both state 3 and 4, O will seek to find the minimum score, and given the choice between -10 and +10, both states 3 and 4 will yield -10.</li>
 <li>>Finally the score list for states 2, 3, and 4 are populated with +10, -10 and -10 respectively, and state 1 seeking to maximize the score will chose the winning move with score +10, state 2.</li
 </ul>
-## A Coded Version of Minimax Hopefully by now you have a rough sense of how th e minimax algorithm determines the best move to play. Let's examine my implementation of the algorithm to solidify the understanding:
+##A Coded Version of Minimax Hopefully by now you have a rough sense of how th e minimax algorithm determines the best move to play. Let's examine my implementation of the algorithm to solidify the understanding:
 
 Here is the function for scoring the game:
 
@@ -101,71 +103,113 @@ def minimax(game)
 end
 ## program
 ```python
-import math
+import tkinter as tk
+self.board = [""] * 9
+self.game_over = False
+self.status_label.config(text="Your turn (X)")
+for b in self.buttons:
+b.config(text="", state=tk.NORMAL)
 
-b = [" "] * 9
-w = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
 
-def show(): print(f"\n{b[0]}|{b[1]}|{b[2]}\n-+-+-\n{b[3]}|{b[4]}|{b[5]}\n-+-+-\n{b[6]}|{b[7]}|{b[8]}\n")
 
-def win():
-    for x,y,z in w:
-        if b[x]==b[y]==b[z]!=" ": return b[x]
-    return "Draw" if " " not in b else None
 
-def mini(maxp):
-    r = win()
-    if r=="O": return 1
-    if r=="X": return -1
-    if r=="Draw": return 0
-    best = -math.inf if maxp else math.inf
-    for i in range(9):
-        if b[i]==" ":
-            b[i] = "O" if maxp else "X"
-            sc = mini(not maxp)
-            b[i] = " "
-            best = max(best, sc) if maxp else min(best, sc)
-    return best
+# Game logic helpers
+WIN_COMBINATIONS = [
+(0, 1, 2), (3, 4, 5), (6, 7, 8), # rows
+(0, 3, 6), (1, 4, 7), (2, 5, 8), # columns
+(0, 4, 8), (2, 4, 6) # diagonals
+]
 
-def move():
-    best, mv = -math.inf, None
-    for i in range(9):
-        if b[i]==" ":
-            b[i] = "O"
-            sc = mini(False)
-            b[i] = " "
-            if sc > best: best, mv = sc, i
-    return mv
 
-print("Tic Tac Toe (You:X  Computer:O)")
-show()
 
-while True:
-    try:
-        p = int(input("Enter position (1-9): "))-1
-        if b[p]!=" ": print("Taken!"); continue
-    except: print("Invalid!"); continue
-    b[p] = "X"; show()
-    if win(): break
-    print("Computer thinking...")
-    b[move()] = "O"; show()
-    if win(): break
 
-r = win()
-print("Draw!" if r=="Draw" else f"{r} wins!")
+def check_winner(board):
+"""Return the winner ('X' or 'O') or None if no winner yet."""
+for a, b, c in WIN_COMBINATIONS:
+if board[a] and board[a] == board[b] == board[c]:
+return board[a]
+return None
 
+
+
+
+def is_board_full(board):
+return all(cell != "" for cell in board)
+
+
+
+
+def minimax(board, depth, is_maximizing):
+"""
+Minimax algorithm with simple depth-based scoring to prefer faster wins.
+Returns an integer score.
+"""
+winner = check_winner(board)
+if winner == AI:
+return 10 - depth
+elif winner == HUMAN:
+return depth - 10
+elif is_board_full(board):
+return 0
+
+
+if is_maximizing:
+best_score = -999
+for i in range(9):
+if board[i] == "":
+board[i] = AI
+score = minimax(board, depth + 1, False)
+board[i] = ""
+if score > best_score:
+best_score = score
+return best_score
+else:
+best_score = 999
+for i in range(9):
+if board[i] == "":
+board[i] = HUMAN
+score = minimax(board, depth + 1, True)
+board[i] = ""
+if score < best_score:
+best_score = score
+return best_score
+
+
+
+
+def best_move(board):
+"""Return the index (0..8) of best move for AI, or None if board full."""
+if is_board_full(board) or check_winner(board):
+return None
+
+
+best_score = -999
+move = None
+for i in range(9):
+if board[i] == "":
+board[i] = AI
+score = minimax(board, 0, False)
+board[i] = ""
+if score > best_score:
+best_score = score
+move = i
+return move
+
+
+
+
+if __name__ == "__main__":
+root = tk.Tk()
+app = TicTacToeGUI(root)
+root.mainloop()
 ```
 
+<hr>
+<h2>Sample Input and Output</h2>
 
-## Input and Output
+<img width="396" height="528" alt="Screenshot 2025-10-24 084110" src="https://github.com/user-attachments/assets/2f22193c-899e-41f1-bb3b-47b74ba962fd" />
 
-<img width="462" height="652" alt="image" src="https://github.com/user-attachments/assets/f738c640-7b23-4561-a9b3-049e44497412" />
 
-<img width="462" height="652" alt="image" src="https://github.com/user-attachments/assets/f300b111-f720-40a0-874d-e5a66562b434" />
-
-<img width="462" height="652" alt="image" src="https://github.com/user-attachments/assets/e40737fc-bf89-4001-8efe-dba53bc1adfb" />
-
-<img width="462" height="652" alt="image" src="https://github.com/user-attachments/assets/b20c4fba-8a88-466b-9901-9da38b1ac9c8" />
-
-## Result:
-Thus,Implementation of  Minimax Search Algorithm for a Simple TIC-TAC-TOE game wasa done successfully.
+<hr>
+<h2>Result:</h2>
+<p>Thus,Implementation of  Minimax Search Algorithm for a Simple TIC-TAC-TOE game wasa done successfully.</p>
